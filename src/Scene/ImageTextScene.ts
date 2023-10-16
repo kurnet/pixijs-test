@@ -56,20 +56,17 @@ export class ImageTextSceneContainer extends BaseSceneContainer {
                     content: '2',
                 },
                 {
-                    type: 'image',
-                    content: '4',
-                },
-                {
-                    type: 'image',
-                    content: '6',
-                },
-                {
                     type: 'text',
-                    content: 'Going to Start now!',
+                    content: 'Going to Start!',
                 }
             ]
         }
-        this._msgContainer = this.createMessageContainer(defaultText);
+
+        let defaultStyle:TextStyle = new TextStyle({
+            fontSize: this.isPortrait ? 24 : 42,
+        });
+
+        this._msgContainer = this.createMessageContainer(defaultText, defaultStyle);
         this.addChild(this._msgContainer);
 
         this.startRandom();
@@ -142,9 +139,11 @@ export class ImageTextSceneContainer extends BaseSceneContainer {
             }
         }
 
+        const tarFontSize = this.isPortrait ? 24 : 48;
         const textStyle = new TextStyle({
-            fontSize: Helper.GetRandomNumber(48, 48),
+            fontSize: Helper.GetRandomNumber(tarFontSize, tarFontSize),
         });
+        
 
         return this.createMessageContainer(textImageFormat, textStyle);
     }

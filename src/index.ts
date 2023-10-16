@@ -15,6 +15,7 @@ const app = new Application({
     backgroundColor: 0xffffff,
     width: 1280,
     height: 720,
+    resizeTo: window,
 });
 
 // scenes array hold by root for passing app ticker

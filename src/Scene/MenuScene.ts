@@ -12,7 +12,7 @@ export class MainMenuContainer extends BaseSceneContainer {
         const style = new TextStyle({
             fill: "#11ff00",
             fontFamily: "Comic Sans MS",
-            fontSize: 42,
+            fontSize: this.isPortrait ? 28 : 42,
             fontVariant: "small-caps",
             fontWeight: "bold",
             strokeThickness: 5
@@ -31,7 +31,6 @@ export class MainMenuContainer extends BaseSceneContainer {
 
         const imgTextStyle = Object.assign({}, style);
         imgTextStyle.fill = "#33ffff";
-        imgTextStyle.fontSize = 42;
 
         const txtImgText = new Text(`Image Text Test`, imgTextStyle);
         txtImgText.anchor.set(0.5, 0.5);
@@ -46,7 +45,6 @@ export class MainMenuContainer extends BaseSceneContainer {
 
         const fireStyle = Object.assign({}, style);
         fireStyle.fill = "#ff6f00";
-        fireStyle.fontSize = 36;
 
         const txtfireTest = new Text(`Fire Particles Test`, fireStyle);
         txtfireTest.anchor.set(0.5, 0.5);

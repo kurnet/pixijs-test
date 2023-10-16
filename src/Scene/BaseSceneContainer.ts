@@ -6,12 +6,14 @@ export const EVT_EXIT_PRESSED = "evt_exit_pressed" as (keyof DisplayObjectEvents
 export class BaseSceneContainer extends Container {
     protected screenWidth:number;
     protected screenHeight:number;
-
+    protected isPortrait:boolean = false;
+    
     constructor(app:Application) {
         super();
         this.screenWidth = app.screen.width;
         this.screenHeight = app.screen.height;
 
+        this.isPortrait = this.screenHeight > this.screenWidth;
         this.once('added', this.onInit);
     }
 

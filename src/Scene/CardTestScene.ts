@@ -89,7 +89,7 @@ export class CardTestSceneContainer extends BaseSceneContainer {
         if (srcAry.length > 0) {
             this._moving = true;
 
-            const stPos: Point = new Point(100, 100);
+            const stPos: Point = new Point(20, 100);
 
             const lastCard = srcAry.pop();
             if (lastCard) {
@@ -161,7 +161,7 @@ export class CardTestSceneContainer extends BaseSceneContainer {
             }
         }
 
-        const stPos: Point = new Point(100, 100);
+        const stPos: Point = new Point(20, 100);
 
         // create all the card from sprite frame and added to the left side
         for (let vi = 0; vi < this._numOfCard; ++vi) {
