@@ -2,6 +2,7 @@ import { Application, Container, DisplayObjectEvents } from "pixi.js";
 
 export const EVT_EXIT_PRESSED = "evt_exit_pressed" as (keyof DisplayObjectEvents);
 
+// Have a base container class for basic scene handling
 export class BaseSceneContainer extends Container {
     protected screenWidth:number;
     protected screenHeight:number;

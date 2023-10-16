@@ -4,24 +4,24 @@
 		"end": 0
 	},
 	"scale": {
-		"start": 0.1,
+		"start": 0.5,
 		"end": 0.01,
-		"minimumScaleMultiplier": 1
+		"minimumScaleMultiplier": 1.25
 	},
 	"color": {
-		"start": "#ff9900",
-		"end": "#ff3d3d"
+		"start": "#ffbe0d",
+		"end": "#ff0000"
 	},
 	"speed": {
-		"start": 104,
+		"start": 200,
 		"end": 50,
 		"minimumSpeedMultiplier": 1
 	},
 	"acceleration": {
-		"x": -10,
-		"y": -250
+		"x": 0,
+		"y": -500
 	},
-	"maxSpeed": 0,
+	"maxSpeed": 500,
 	"startRotation": {
 		"min": 225,
 		"max": 315
@@ -32,17 +32,22 @@
 		"max": 0
 	},
 	"lifetime": {
-		"min": 0.5,
-		"max": 1.5
+		"min": 0.3,
+		"max": 0.5
 	},
 	"blendMode": "normal",
-	"frequency": 0.001,
+	"frequency": 0.03,
 	"emitterLifetime": -1,
-	"maxParticles": 500,
+	"maxParticles": 10,
 	"pos": {
 		"x": 0,
 		"y": 0
 	},
 	"addAtBack": false,
-	"spawnType": "point"
+	"spawnType": "circle",
+	"spawnCircle": {
+		"x": 0,
+		"y": -30,
+		"r": 20
+	}
 }

@@ -9,12 +9,12 @@ export class CardTestSceneContainer extends BaseSceneContainer {
     private _cardBackKey: string = "card-back";
     private _cardFaceKeyPrefix: string = "card-face-0";
 
-    private _numOfCard: number = 144;
-    private _cardOffset: { x: number, y: number } = { x: 0.1, y: 0.5 };
+    private _numOfCard: number = 2;
+    private _cardOffset: { x: number, y: number } = { x: 0.2, y: 0.7 };
 
     private _cards: CardSprite[] = [];
     private _movedCards: CardSprite[] = [];
-    private _moving:boolean = false;
+    private _moving: boolean = false;
 
     private _cardsTexPool: Texture[] = [];
     private _randCardsPool: number[] = [];
@@ -26,10 +26,10 @@ export class CardTestSceneContainer extends BaseSceneContainer {
         super.onInit();
 
         this._assetsKey.push(this._cardBackKey);
-        Assets.add({ alias: this._cardBackKey, src: "card-back.png" });
+        Assets.add({ alias: this._cardBackKey, src: "imgs/card-back.png" });
         for (let vi = 1; vi <= 4; ++vi) {
             const cardFaceKey = `${this._cardFaceKeyPrefix}${vi}`;
-            Assets.add({ alias: cardFaceKey, src: `${this._cardFaceKeyPrefix}${vi}.png` });
+            Assets.add({ alias: cardFaceKey, src: `imgs/${this._cardFaceKeyPrefix}${vi}.png` });
 
             this._assetsKey.push(cardFaceKey);
         }
@@ -54,12 +54,6 @@ export class CardTestSceneContainer extends BaseSceneContainer {
         this._rightDeck.x = this.screenWidth / 2;
         this.addChild(this._rightDeck);
 
-
-        Assets.load(this._assetsKey).then(() => {
-            this.initCardDeck();
-            this.forwardCard(2);
-        });
-
         const btnExit = new Text('Quit');
         btnExit.anchor.set(1, 0);
         btnExit.position.set(this.screenWidth - 50, 10);
@@ -70,6 +64,13 @@ export class CardTestSceneContainer extends BaseSceneContainer {
         btnExit.on('pointerdown', () => {
             this.emit(EVT_EXIT_PRESSED);
         });
+
+        // load all the sprite sheet for this scene
+        Assets.load(this._assetsKey).then(() => {
+            this.initCardDeck();
+            this.forwardCard(2);
+        });
+
     }
 
     override onShow(): void {
@@ -80,41 +81,46 @@ export class CardTestSceneContainer extends BaseSceneContainer {
 
     private moveCard(srcAry: CardSprite[], tarAry: CardSprite[], delaySec: number, offsetToX: number,
         onCardMoved: (card: CardSprite) => void, onComplete: () => void) {
-            if(this.parent == null || this._moving){
-                return;
+        // on hold if the scene is not showing 
+        if (this.parent == null || this._moving) {
+            return;
+        }
+
+        if (srcAry.length > 0) {
+            this._moving = true;
+
+            const stPos: Point = new Point(100, 100);
+
+            const lastCard = srcAry.pop();
+            if (lastCard) {
+                const cardIn = tarAry.length;
+
+                const tarPos = { x: stPos.x + cardIn * this._cardOffset.x, y: 100 + cardIn * this._cardOffset.y };
+                tarPos.x += offsetToX;
+
+                const moveTween = new Tween(lastCard.position).to(tarPos, 2000).onComplete(() => {
+                    this._moving = false;
+                    onCardMoved(lastCard);
+                });
+                moveTween.easing(Easing.Quadratic.Out);
+                moveTween.start(delaySec * 1000);
+
+                tarAry.push(lastCard);
             }
-                        
-            if (srcAry.length > 0) {
-                this._moving = true;
-
-                const stPos: Point = new Point(100, 100);
-
-                const lastCard = srcAry.pop();
-                if (lastCard) {
-                    const cardIn = tarAry.length;
-
-                    const tarPos = { x: stPos.x + cardIn * this._cardOffset.x, y: 100 + cardIn * this._cardOffset.y };
-                    tarPos.x += offsetToX;
-
-                    const moveTween = new Tween(lastCard.position).to(tarPos, 2000).onComplete(() => {
-                        this._moving = false;
-                        onCardMoved(lastCard);
-                    });
-                    moveTween.easing(Easing.Quadratic.Out);
-                    moveTween.start(delaySec * 1000);
-
-                    tarAry.push(lastCard);
-                }
-            } else {
-                onComplete();
-            }
+        } else {
+            onComplete();
+        }
     }
 
+    // a animation sequence from left -> right
     private forwardCard(delaySec: number): void {
         const toRightScreenX = this.screenWidth / 2;
 
         this.moveCard(this._cards, this._movedCards, delaySec, toRightScreenX, (card: CardSprite) => {
+            // when the card aarrived then add to the right panel container
             this._rightDeck!.addChild(card);
+
+            // revert the position fake arrived at the same position
             card.x -= toRightScreenX;
             this.forwardCard(1);
         }, () => {
@@ -122,20 +128,24 @@ export class CardTestSceneContainer extends BaseSceneContainer {
         });
     }
 
+    // a animation sequence from right -> left
     private backward(delaySec: number): void {
         const toLeftScreenX = this.screenWidth / 2 * -1;
 
         this.moveCard(this._movedCards, this._cards, delaySec, toLeftScreenX, (card: CardSprite) => {
-            this.addChild(card);
+            // add the card back to this container but always bottom of the right panel
+            this.addChildAt(card, this.children.indexOf(this._rightDeck!));
             card.x -= toLeftScreenX;
             this.backward(1);
         }, () => {
+            // when all card done, reorder the right panel to mostly bottom
+            this.addChildAt(this._rightDeck!, 1);
             this.forwardCard(2);
         });
     }
 
     private initCardDeck(): void {
-        // generate card textures
+        // generate card textures library
         const sheetData = { symbol: 4, count: 13 };
 
         const cardSheetData = { w: 88, h: 124, row: 5, count: 13 };
@@ -144,7 +154,6 @@ export class CardTestSceneContainer extends BaseSceneContainer {
             for (let vc = 0; vc < sheetData.count; ++vc) {
                 const pickCol = vc % cardSheetData.row;
                 const pickRow = Math.floor(vc / cardSheetData.row);
-                console.log(`card: ${vc} at ${pickCol} / ${pickRow}`);
 
                 const pickRctangle = new Rectangle(pickCol * cardSheetData.w, pickRow * cardSheetData.h, cardSheetData.w, cardSheetData.h);
 
@@ -154,6 +163,7 @@ export class CardTestSceneContainer extends BaseSceneContainer {
 
         const stPos: Point = new Point(100, 100);
 
+        // create all the card from sprite frame and added to the left side
         for (let vi = 0; vi < this._numOfCard; ++vi) {
             const cardBackTex = Texture.from("card-back");
             cardBackTex.frame = new Rectangle(0, 0, 88, 124);
@@ -174,11 +184,13 @@ export class CardTestSceneContainer extends BaseSceneContainer {
     }
 
     private randomPickCard(): Texture {
+        // create the range of the texture index avoid much duplication
         if (this._randCardsPool.length == 0) {
             this._cardsTexPool.forEach((_, vi) => {
                 this._randCardsPool.push(vi);
             });
 
+            // shuffle the order of the card
             this._randCardsPool = Helper.ShuffleArray(this._randCardsPool);
         }
 

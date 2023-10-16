@@ -25,7 +25,7 @@ export class MainMenuContainer extends BaseSceneContainer {
         txtCard.eventMode = "static";
         txtCard.cursor = "pointer";
         txtCard.on('pointerdown', () => {
-            this.emit(EVT_MODES_PRESSED, "card");
+            this.modeSelected("card");            
         });
 
 
@@ -41,7 +41,7 @@ export class MainMenuContainer extends BaseSceneContainer {
         txtImgText.eventMode = "static";
         txtImgText.cursor = "pointer";
         txtImgText.on('pointerdown', () => {
-            this.emit(EVT_MODES_PRESSED, "text");
+            this.modeSelected("text");            
         });
 
         const fireStyle = Object.assign({}, style);
@@ -56,8 +56,11 @@ export class MainMenuContainer extends BaseSceneContainer {
         txtfireTest.eventMode = "static";
         txtfireTest.cursor = "pointer";
         txtfireTest.on('pointerdown', () => {
-            this.emit(EVT_MODES_PRESSED, "fire");
+            this.modeSelected("fire");            
         });
+    }
 
+    private modeSelected(mode:TestMode):void{
+        this.emit(EVT_MODES_PRESSED, mode);
     }
 }

@@ -8,7 +8,7 @@ export class ImageTextSceneContainer extends BaseSceneContainer {
     private _imgPool: Texture[] = [];
 
     private _msgContainer?: Container;
-    private _penddingNext:boolean = false;
+    private _penddingNext: boolean = false;
 
     override onInit(): void {
         super.onInit();
@@ -24,8 +24,8 @@ export class ImageTextSceneContainer extends BaseSceneContainer {
             this.emit(EVT_EXIT_PRESSED);
         });
 
-        Assets.add({ alias: "emoji", src: "emoji-ss.png" });
-        Assets.add({ alias: "dollar", src: "dollar.svg" });
+        Assets.add({ alias: "emoji", src: "imgs/emoji-ss.png" });
+        Assets.add({ alias: "dollar", src: "imgs/dollar.svg" });
         Assets.load(["emoji", "dollar"]).then(() => {
             this.initImages();
             this.onShow();
@@ -38,30 +38,31 @@ export class ImageTextSceneContainer extends BaseSceneContainer {
         if (this._msgContainer) {
             this._msgContainer.destroy();
         }
-        
-        const defaultText:ITextImageFormat = {
+
+        // Have a default data set for this scene default content 
+        const defaultText: ITextImageFormat = {
             type: "text",
             sections: [
                 {
                     type: 'text',
                     content: "Hello!",
-                }, 
+                },
                 {
                     type: 'image',
                     content: '0',
-                }, 
+                },
                 {
                     type: 'image',
                     content: '2',
-                }, 
+                },
                 {
                     type: 'image',
                     content: '4',
-                }, 
+                },
                 {
                     type: 'image',
                     content: '6',
-                }, 
+                },
                 {
                     type: 'text',
                     content: 'Going to Start now!',
@@ -74,22 +75,22 @@ export class ImageTextSceneContainer extends BaseSceneContainer {
         this.startRandom();
     }
 
-    private startRandom():void{
-        if(!this._penddingNext){
+    private startRandom(): void {
+        if (!this._penddingNext) {
             this._penddingNext = true;
-            Helper.TimeoutPromise(2000).then(()=>{
+            Helper.TimeoutPromise(2000).then(() => {
                 this._msgContainer?.destroy();
-    
+
                 this._msgContainer = this.randomMessage();
                 this.addChild(this._msgContainer);
-    
+
                 this._penddingNext = false;
-                if(this.parent && this.visible){
+                if (this.parent && this.visible) {
                     this.startRandom();
-                }            
+                }
             })
         }
-        
+
     }
 
     private initImages(): void {
@@ -114,22 +115,24 @@ export class ImageTextSceneContainer extends BaseSceneContainer {
         // give 40% chance to show price content
         const showPrice = Helper.GetRandomNumber(100, 0) < 40;
 
-        if(showPrice){
+        if (showPrice) {
+            // formating a price content
             textImageFormat.type = 'price';
             textImageFormat.sections.push({
                 type: 'image',
-                content : `${this._imgPool.length - 1}`,
+                content: `${this._imgPool.length - 1}`,
             });
             textImageFormat.sections.push({
                 type: 'text',
                 content: Helper.GetRandomNumber(10000, 1000).toString(),
             });
-        }else{
-            // random how many section
+        } else {
+            // random how many section of the content
             const randSection = Helper.GetRandomNumber(10, 3);
 
             let vi = 0;
             for (vi = 0; vi < randSection; ++vi) {
+                // random text or image
                 const randType = Helper.GetRandomNumber(2, 0);
                 textImageFormat.sections.push({
                     type: randType === 0 ? "text" : "image",
@@ -146,12 +149,13 @@ export class ImageTextSceneContainer extends BaseSceneContainer {
         return this.createMessageContainer(textImageFormat, textStyle);
     }
 
-    private createMessageContainer(textImageFormat:ITextImageFormat, textStyle?:TextStyle):Container{
+    private createMessageContainer(textImageFormat: ITextImageFormat, textStyle?: TextStyle): Container {
         const msgHost = new Container();
 
         let textHeight = -1;
         let pendingChild: Container[] = [];
-        
+
+        // create Text or Sprite from the format data
         textImageFormat.sections.forEach(data => {
             let initChild: Container;
             switch (data.type) {
@@ -173,7 +177,9 @@ export class ImageTextSceneContainer extends BaseSceneContainer {
         });
 
         let totalWidth = 0;
+        let totalHeight = 0;
         let lastChild: Container | undefined;
+        // add all the display object when know the size of text and do the scaling alignment
         pendingChild.forEach(child => {
             if (lastChild) {
                 child.x = lastChild.x + lastChild.width;
@@ -182,14 +188,16 @@ export class ImageTextSceneContainer extends BaseSceneContainer {
             lastChild = child;
 
             totalWidth += child.width;
+            totalHeight = child.height;
 
             msgHost.addChild(child);
         });
 
         pendingChild = [];
 
+        // try to center the content in this screen
         msgHost.x = (this.screenWidth - totalWidth) / 2;
-        msgHost.y = this.screenHeight / 2;
+        msgHost.y = (this.screenHeight - totalHeight) / 2;
         return msgHost;
     }
 }
