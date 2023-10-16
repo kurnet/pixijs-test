@@ -12,7 +12,7 @@ const app = new Application({
     view: eleCanvas,
     resolution: window.devicePixelRatio || 1,
     autoDensity: true,
-    backgroundColor: 0x6495ed,
+    backgroundColor: 0xffffff,
     width: 1280,
     height: 720,
 });
