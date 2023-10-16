@@ -9,7 +9,7 @@ export class CardTestSceneContainer extends BaseSceneContainer {
     private _cardBackKey: string = "card-back";
     private _cardFaceKeyPrefix: string = "card-face-0";
 
-    private _numOfCard: number = 2;
+    private _numOfCard: number = 144;
     private _cardOffset: { x: number, y: number } = { x: 0.2, y: 0.7 };
 
     private _cards: CardSprite[] = [];
