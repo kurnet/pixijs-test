@@ -39,7 +39,7 @@ export class FireTestSceneContainer extends BaseSceneContainer {
             ]).then((res: any) => {
                 const logSprite = Sprite.from("logs-img");
                 logSprite.anchor.set(0.5, 1);
-                logSprite.position.set(this.screenWidth / 2, this.screenHeight / 2);
+                logSprite.position.set(this.screenWidth / 2, this.screenHeight / 2 - 40);
                 this._emitterHost?.addChild(logSprite);
 
                 this._emitter = new particles.Emitter(this._emitterHost!, particles.upgradeConfig(res["config"], [Texture.from("circle-img")]));
@@ -47,12 +47,13 @@ export class FireTestSceneContainer extends BaseSceneContainer {
                 this._emitter.emit = true;
 
                 this.eventMode = "static";
-                this.on("mousemove", event => {
+                this.on("pointermove", event => {
                     this._emitter?.updateSpawnPos(event.global.x, event.global.y - 65);
 
                     logSprite.x = event.global.x;
                     logSprite.y = event.global.y - 40;
                 });
+
             });
         })
 
